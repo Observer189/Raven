@@ -1,8 +1,9 @@
-package com.example.raven;
+package com.example.raven.Model;
 
 public class Message {
     String author;
     String text;
+    long time;
     public Message()
     {
 
@@ -27,5 +28,13 @@ public class Message {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
     }
 }
