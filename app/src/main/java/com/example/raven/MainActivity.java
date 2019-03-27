@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -24,7 +25,12 @@ import com.google.gson.GsonBuilder;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -40,53 +46,67 @@ public class MainActivity extends Activity {
     TextView text;
     Button contactButton;
     ListView chatList;
-    ApiService service;
+    Thread thread;
+
     ChatsAdapter adapter;
 
-    ArrayList<Chat> chatsAr;
+    static ArrayList<Chat> chatsAr;
     //Имя файла настроек
 
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setContentView(R.layout.activity_main);
 
         Consts.sp = getSharedPreferences(Consts.APP_PREFERENCES, Context.MODE_PRIVATE);
         Consts.editor= Consts.sp.edit();
         isRegistred= Consts.sp.contains(Consts.APP_PREFERENCES_NAME);
-        Retrofit retrofit=new Retrofit.Builder()
+        Consts.retrofit=new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        service=retrofit.create(ApiService.class);
+        Consts.service=Consts.retrofit.create(ApiService.class);
 
         Consts.gsonBuilder=new GsonBuilder();
         Consts.gson=Consts.gsonBuilder.create();
 
 
-        Chat chat=new Chat();
+        final Chat chat=new Chat();
         //chat.setAdresatName("");
         chat.setAdresatId(88888888);
-        Message mes=new Message("Kostya",null);
+        Message mes=new Message(55335533,chat.getAdresatId(),"add");
         mes.setTime(System.currentTimeMillis());
-        chat.setLastMessage(mes);
+        chat.getMessages().add(mes);
 
 
-        adapter=new ChatsAdapter(this,chatsAr);
 
-        setContentView(R.layout.activity_main);
+
 
         text = (TextView) findViewById(R.id.text_appName);
         contactButton = (Button) findViewById(R.id.contactButton);
         chatList=findViewById(R.id.chatList);
-        user=new User();
-
+        Consts.user=new User();
+        user=Consts.user;
         chatsAr=new ArrayList<Chat>();
-        loadChats();
-
+        //loadChats();
         adapter=new ChatsAdapter(this,chatsAr);
         chatList.setAdapter(adapter);
+
+        //chatsAr.add(chat);
+        loadChats();
+        adapter.notifyDataSetChanged();
+
+        chatList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent=new Intent(MainActivity.this,ChatActivity.class);
+                //String transfer=Consts.gson.toJson(chatsAr.get(position));
+                //intent.putExtra("Chat",transfer);
+                intent.putExtra("ChatNumber",position);
+                startActivity(intent);
+            }
+        });
 
         if(!isRegistred) {
             LayoutInflater li=LayoutInflater.from(context);
@@ -128,6 +148,51 @@ public class MainActivity extends Activity {
                     }
                 });
 
+        thread=new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Timer timer=new Timer();
+                TimerTask timerTask=new TimerTask() {
+                    @Override
+                    public void run() {
+                        //System.out.println("request");
+                        Consts.service.getMessages(Consts.user.getId()).enqueue(new Callback<ArrayList<Message>>() {
+                            @Override
+                            public void onResponse(Call<ArrayList<Message>> call, Response<ArrayList<Message>> response) {
+                                ArrayList<Message> resp=response.body();
+
+                                for(int i=0;i<resp.size();i++)
+                                {
+                                    boolean isExist=false;
+                                    for (int j=0;j<chatsAr.size();j++)
+                                    {
+                                        if(resp.get(i).getAuthorId()==chatsAr.get(j).getAdresatId())//Если чат с адресантом существует то добавляем сообщение в массив
+                                        {
+                                            isExist=true;
+                                            chatsAr.get(j).getMessages().add(resp.get(i));
+                                        }
+                                    }
+                                    if(!isExist)//если же чата не существует то создаем его
+                                    {
+
+                                    }
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ArrayList<Message>> call, Throwable t) {
+
+                            }
+                        });
+                    }
+
+            };
+
+                timer.schedule(timerTask,0,Consts.requestDelay);
+
+        }
+        });
+        thread.start();
 
 
 
@@ -173,6 +238,7 @@ public class MainActivity extends Activity {
 
             }
         }
+        //adapter.notifyDataSetChanged();
     }
 
 }

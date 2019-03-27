@@ -40,11 +40,12 @@ public class ChatsAdapter extends ArrayAdapter<Chat> {
 
         TextView id=(TextView) convertView.findViewById(R.id.adrId);
         id.setText("id:"+String.valueOf(chat.getAdresatId()));
-
-        TextView time=(TextView)convertView.findViewById(R.id.mesTime);
-        Date date=new Date(chat.getLastMessage().getTime());
-        SimpleDateFormat dateFormat=new SimpleDateFormat("(HH:mm:ss)");
-        time.setText(dateFormat.format(date));
+        if(chat.getLastMessage()!=null) {
+            TextView time = (TextView) convertView.findViewById(R.id.mesTime);
+            Date date = new Date(chat.getLastMessage().getTime());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("(HH:mm:ss)");
+            time.setText(dateFormat.format(date));
+        }
 
         TextView message=convertView.findViewById(R.id.lastMessage);
         if(chat.getLastMessage()!=null)

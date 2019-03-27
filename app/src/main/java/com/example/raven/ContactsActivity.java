@@ -119,6 +119,7 @@ public class ContactsActivity extends Activity {
 
             }
         }
+
     }
     public void onPause() {
         saveContacts();

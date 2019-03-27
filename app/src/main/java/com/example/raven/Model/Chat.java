@@ -6,8 +6,13 @@ public class Chat {
     private int id;
     private int adresatId;
     private String adresatName;
-    private Message lastMessage;
+
     private ArrayList<Message> messages;
+
+    public Chat()
+    {
+        messages=new ArrayList<Message>();
+    }
 
     public int getId() {
         return id;
@@ -19,10 +24,6 @@ public class Chat {
 
     public int getAdresatId() {
         return adresatId;
-    }
-
-    public Message getLastMessage() {
-        return lastMessage;
     }
 
     public String getAdresatName() {
@@ -37,12 +38,15 @@ public class Chat {
         this.adresatId = adresatId;
     }
 
-    public void setAdresatName(String adresatName) {
-        this.adresatName = adresatName;
+    public Message getLastMessage()
+    {
+        if(messages.size()>0)
+        return messages.get(messages.size()-1);
+        else return null;
     }
 
-    public void setLastMessage(Message lastMessage) {
-        this.lastMessage = lastMessage;
+    public void setAdresatName(String adresatName) {
+        this.adresatName = adresatName;
     }
 
     public void setMessages(ArrayList<Message> messages) {
