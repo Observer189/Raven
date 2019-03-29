@@ -1,8 +1,9 @@
 package com.example.raven.Model;
 
 public class User {
-    String name;
-    int id;
+    private String name;
+    private int id;
+
     public User(String name,int id)
     {
         this.name=name;

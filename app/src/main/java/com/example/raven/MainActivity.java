@@ -24,9 +24,12 @@ import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.crypto.SecretKey;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,9 +39,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends Activity {
     //final String baseUrl="https://intense-waters-91005.herokuapp.com";
-    final String baseUrl="http://192.168.0.56:8080";
+    final String baseUrl = "http://192.168.1.105:8080"; //"http://192.168.0.56:8080"
 
-    Context context=this;
+    Context context = this;
     boolean isRegistred;
     User user;
 
@@ -60,63 +63,63 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         Consts.sp = getSharedPreferences(Consts.APP_PREFERENCES, Context.MODE_PRIVATE);
-        Consts.editor= Consts.sp.edit();
-        isRegistred= Consts.sp.contains(Consts.APP_PREFERENCES_NAME);
-        Consts.retrofit=new Retrofit.Builder()
+        Consts.editor = Consts.sp.edit();
+        isRegistred = Consts.sp.contains(Consts.APP_PREFERENCES_NAME);
+        Consts.retrofit = new Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        Consts.service=Consts.retrofit.create(ApiService.class);
+        Consts.service = Consts.retrofit.create(ApiService.class);
 
-        Consts.gsonBuilder=new GsonBuilder();
-        Consts.gson=Consts.gsonBuilder.create();
-
-
-        final Chat chat=new Chat();
-        //chat.setAdresatName("");
-        chat.setAdresatId(88888888);
-        Message mes=new Message(55335533,chat.getAdresatId(),"add");
-        mes.setTime(System.currentTimeMillis());
-        chat.getMessages().add(mes);
-
-
-
+        Consts.gsonBuilder = new GsonBuilder();
+        Consts.gsonBuilder.registerTypeAdapter(SecretKey.class, new SecretKeyAdapter());
+        Consts.gson = Consts.gsonBuilder.create();
 
 
         text = (TextView) findViewById(R.id.text_appName);
         contactButton = (Button) findViewById(R.id.contactButton);
-        chatList=findViewById(R.id.chatList);
-        Consts.user=new User();
-        user=Consts.user;
-        chatsAr=new ArrayList<Chat>();
+        chatList = findViewById(R.id.chatList);
+        Consts.user = new User();
+        user = Consts.user;
+        chatsAr = new ArrayList<Chat>();
         //loadChats();
-        adapter=new ChatsAdapter(this,chatsAr);
+        adapter = new ChatsAdapter(this, chatsAr);
         chatList.setAdapter(adapter);
 
-        //chatsAr.add(chat);
+
+
+        final Chat chat = new Chat();
+        //chat.setAdresatName("");
+        chat.setAdresatId(1111);
+        Message mes = new Message(123, chat.getAdresatId(), "add");
+        mes.setTime(System.currentTimeMillis());
+        chat.getMessages().add(mes);
+        chatsAr.add(chat);
         loadChats();
         adapter.notifyDataSetChanged();
+
+
 
         chatList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent=new Intent(MainActivity.this,ChatActivity.class);
+                Intent intent = new Intent(MainActivity.this, ChatActivity.class);
                 //String transfer=Consts.gson.toJson(chatsAr.get(position));
                 //intent.putExtra("Chat",transfer);
-                intent.putExtra("ChatNumber",position);
+                intent.putExtra("ChatNumber", position);
                 startActivity(intent);
             }
         });
 
-        if(!isRegistred) {
-            LayoutInflater li=LayoutInflater.from(context);
+        if (!isRegistred) {
+            LayoutInflater li = LayoutInflater.from(context);
             View registerView = li.inflate(R.layout.register, null);
 
             AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(context);
             mDialogBuilder.setView(registerView);
 
-            final EditText nameText =  registerView.findViewById(R.id.nameText);
-            final EditText idText =  registerView.findViewById(R.id.idText);
+            final EditText nameText = registerView.findViewById(R.id.nameText);
+            final EditText idText = registerView.findViewById(R.id.idText);
 
             mDialogBuilder
                     .setCancelable(false)
@@ -125,7 +128,7 @@ public class MainActivity extends Activity {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int id) {
                                     Consts.editor.putString(Consts.APP_PREFERENCES_NAME, nameText.getText().toString());
-                                    Consts.editor.putInt(Consts.APP_PREFERENCES_Id,Integer.valueOf(idText.getText().toString()));
+                                    Consts.editor.putInt(Consts.APP_PREFERENCES_Id, Integer.valueOf(idText.getText().toString()));
                                     Consts.editor.apply();
                                 }
 
@@ -136,47 +139,65 @@ public class MainActivity extends Activity {
             alertDialog.show();
 
 
-                }
-                user.setName(Consts.sp.getString(Consts.APP_PREFERENCES_NAME,""));
-                user.setId(Consts.sp.getInt(Consts.APP_PREFERENCES_Id,0));
+        }
+        user.setName(Consts.sp.getString(Consts.APP_PREFERENCES_NAME, ""));
+        user.setId(Consts.sp.getInt(Consts.APP_PREFERENCES_Id, 0));
 
-                contactButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        Intent intent = new Intent(MainActivity.this, ContactsActivity.class);
-                        startActivity(intent);
-                    }
-                });
+        contactButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, ContactsActivity.class);
+                startActivity(intent);
+            }
+        });
 
-        thread=new Thread(new Runnable() {
+        thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                Timer timer=new Timer();
-                TimerTask timerTask=new TimerTask() {
+                Timer timer = new Timer();
+                TimerTask timerTask = new TimerTask() {
                     @Override
                     public void run() {
                         //System.out.println("request");
                         Consts.service.getMessages(Consts.user.getId()).enqueue(new Callback<ArrayList<Message>>() {
                             @Override
                             public void onResponse(Call<ArrayList<Message>> call, Response<ArrayList<Message>> response) {
-                                ArrayList<Message> resp=response.body();
-
-                                for(int i=0;i<resp.size();i++)
-                                {
-                                    boolean isExist=false;
-                                    for (int j=0;j<chatsAr.size();j++)
-                                    {
-                                        if(resp.get(i).getAuthorId()==chatsAr.get(j).getAdresatId())//Если чат с адресантом существует то добавляем сообщение в массив
+                                ArrayList<Message> resp = response.body();
+                                if (resp != null){
+                                    for (int i = 0; i < resp.size(); i++) {
+                                        boolean isExist = false;
+                                        for (int j = 0; j < chatsAr.size(); j++) {
+                                            if (resp.get(i).getAuthorId() == chatsAr.get(j).getAdresatId())//Если чат с адресантом существует то добавляем сообщение в массив
+                                            {
+                                                isExist = true;
+                                                chatsAr.get(j).getMessages().add(resp.get(i));
+                                            }
+                                        }
+                                        if (!isExist)//если же чата не существует то создаем его
                                         {
-                                            isExist=true;
-                                            chatsAr.get(j).getMessages().add(resp.get(i));
+                                            final Chat chat = new Chat();
+                                            /*
+                                            Consts.service.getKey(Consts.user.getId()).enqueue(new Callback<SecretKey>() {
+                                                @Override
+                                                public void onResponse(Call<SecretKey> call, Response<SecretKey> response) {
+                                                    SecretKey key = response.body();
+                                                    chat.setKey(key);
+                                                }
+                                                @Override
+                                                public void onFailure(Call<SecretKey> call, Throwable t) {
+
+                                                }
+                                            });
+                                            */
+                                            chat.setAdresatId(resp.get(i).getAuthorId());
+                                            chatsAr.add(chat);
+                                            adapter.notifyDataSetInvalidated();
+                                            chatsAr.get(i).getMessages().add(resp.get(i));
+                                            loadChats();
                                         }
                                     }
-                                    if(!isExist)//если же чата не существует то создаем его
-                                    {
-
-                                    }
                                 }
+
                             }
 
                             @Override
@@ -186,55 +207,51 @@ public class MainActivity extends Activity {
                         });
                     }
 
-            };
+                };
 
-                timer.schedule(timerTask,0,Consts.requestDelay);
+                timer.schedule(timerTask, 0, Consts.requestDelay);
 
-        }
+            }
         });
         thread.start();
 
 
-
-
-
-
     }
+
     @Override
     protected void onRestart() {
         loadChats();
         adapter.notifyDataSetChanged();
         super.onRestart();
     }
+
     @Override
-    public void onStop()
-    {
+    public void onStop() {
         super.onStop();
         saveChats();
     }
-    public void saveChats()
-    {
-        Set<String> set=new HashSet<String>();
-        for(int i=0;i<chatsAr.size();i++)
-        {
 
-            String temp=Consts.gson.toJson(chatsAr.get(i));
+    public void saveChats() {
+        Set<String> set = new HashSet<>();
+        for (int i = 0; i < chatsAr.size(); i++) {
+
+            String temp = Consts.gson.toJson(chatsAr.get(i));
             set.add(temp);
         }
 
-        Consts.editor.putStringSet(Consts.APP_PREFERENCES_CHATS,set);
+        Consts.editor.putStringSet(Consts.APP_PREFERENCES_CHATS, set);
         Consts.editor.apply();
     }
-    public void loadChats()
-    {
-        if(Consts.sp.contains(Consts.APP_PREFERENCES_CHATS)) {
+
+    public void loadChats() {
+        if (Consts.sp.contains(Consts.APP_PREFERENCES_CHATS)) {
             Set<String> set = Consts.sp.getStringSet(Consts.APP_PREFERENCES_CHATS, null);
-            ArrayList<Chat> tAr=new ArrayList<Chat>();
+            ArrayList<Chat> tAr = new ArrayList<Chat>();
             System.out.println(set);
             for (String s : set) {
                 Chat temp = Consts.gson.fromJson(s, Chat.class);
                 tAr.add(temp);
-                chatsAr=tAr;
+                chatsAr = tAr;
 
             }
         }
