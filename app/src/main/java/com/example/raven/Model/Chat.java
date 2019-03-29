@@ -1,17 +1,29 @@
 package com.example.raven.Model;
 
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 
 public class Chat {
     private int id;
     private int adresatId;
     private String adresatName;
+    private SecretKey key;
 
     private ArrayList<Message> messages;
 
     public Chat()
     {
-        messages=new ArrayList<Message>();
+        messages=new ArrayList<>();
+
+        try {
+            key = KeyGenerator.getInstance("DES").generateKey();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public int getId() {
@@ -20,6 +32,14 @@ public class Chat {
 
     public ArrayList<Message> getMessages() {
         return messages;
+    }
+
+    public void setKey(SecretKey key) {
+        this.key = key;
+    }
+
+    public SecretKey getKey() {
+        return key;
     }
 
     public int getAdresatId() {

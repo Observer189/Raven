@@ -1,11 +1,11 @@
 package com.example.raven.Model;
 
 public class Message {
-    String authorName;
-    int authorId;
-    int adrId;
-    String text;
-    long time;
+    private String authorName;
+    private int authorId;
+    private int adrId;
+    private String text;
+    private long time;
     public Message()
     {
 
