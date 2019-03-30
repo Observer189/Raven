@@ -15,16 +15,20 @@ import retrofit2.http.Query;
 
 public interface ApiService {
     @POST("/send")
-    Call<ServResponse> sendMessage(@Query("message") String message, @Query("authorId") int id,@Query("adrId") int adrId);
+    Call<ServResponse> sendMessage(@Query("message") String message,
+                                   @Query("authorId") int id,
+                                   @Query("adrId") int adrId);
 
     @POST("/sendKey")
-    Call<ServResponse> sendKey(@Query("key") String key);
+    Call<ServResponse> sendKey(@Query("key") String key,
+                               @Query("authorId") int id,
+                               @Query("adrId") int adrId);
 
     @GET("/get")
     Call<ArrayList<Message>> getMessages(@Query("id") int id);
 
     @GET("/getKey")
-    Call<Key> getKey(@Query("id") int id);
+    Call<String> getKey(@Query("id") int id);
 
 
 }
