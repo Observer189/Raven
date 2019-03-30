@@ -15,7 +15,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.raven.Model.Chat;
-import com.example.raven.Model.Contact;
 import com.example.raven.Model.Message;
 import com.example.raven.Model.User;
 import com.example.raven.utils.ApiService;
@@ -24,7 +23,6 @@ import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -39,7 +37,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends Activity {
     //final String baseUrl="https://intense-waters-91005.herokuapp.com";
-    final String baseUrl = "http://192.168.1.105:8080"; //"http://192.168.0.56:8080"
+    final String baseUrl = "http://192.168.43.104:8080"; //"http://192.168.1.105:8080"
 
     Context context = this;
     boolean isRegistred;
@@ -51,7 +49,7 @@ public class MainActivity extends Activity {
     ListView chatList;
     Thread thread;
 
-    ChatsAdapter adapter;
+    static ChatsAdapter chatsAdapter;
 
     static ArrayList<Chat> chatsAr;
     //Имя файла настроек
@@ -83,8 +81,8 @@ public class MainActivity extends Activity {
         user = Consts.user;
         chatsAr = new ArrayList<Chat>();
         //loadChats();
-        adapter = new ChatsAdapter(this, chatsAr);
-        chatList.setAdapter(adapter);
+        chatsAdapter = new ChatsAdapter(this, chatsAr);
+        chatList.setAdapter(chatsAdapter);
 
 
 
@@ -94,9 +92,9 @@ public class MainActivity extends Activity {
         Message mes = new Message(123, chat.getAdresatId(), "add");
         mes.setTime(System.currentTimeMillis());
         chat.getMessages().add(mes);
-        chatsAr.add(chat);
+        //chatsAr.add(chat);
         loadChats();
-        adapter.notifyDataSetChanged();
+        chatsAdapter.notifyDataSetChanged();
 
 
 
@@ -191,7 +189,7 @@ public class MainActivity extends Activity {
                                             */
                                             chat.setAdresatId(resp.get(i).getAuthorId());
                                             chatsAr.add(chat);
-                                            adapter.notifyDataSetInvalidated();
+                                            chatsAdapter.notifyDataSetInvalidated();
                                             chatsAr.get(i).getMessages().add(resp.get(i));
                                             loadChats();
                                         }
@@ -220,8 +218,8 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onRestart() {
-        loadChats();
-        adapter.notifyDataSetChanged();
+        //loadChats();
+        //chatsAdapter.notifyDataSetChanged();
         super.onRestart();
     }
 
@@ -233,9 +231,9 @@ public class MainActivity extends Activity {
 
     public void saveChats() {
         Set<String> set = new HashSet<>();
-        for (int i = 0; i < chatsAr.size(); i++) {
+        for (int i = 0; i < chatsAdapter.getCount(); i++) {
 
-            String temp = Consts.gson.toJson(chatsAr.get(i));
+            String temp = Consts.gson.toJson(chatsAdapter.getItem(i));
             set.add(temp);
         }
 
@@ -244,18 +242,20 @@ public class MainActivity extends Activity {
     }
 
     public void loadChats() {
+        chatsAdapter.clear();
         if (Consts.sp.contains(Consts.APP_PREFERENCES_CHATS)) {
             Set<String> set = Consts.sp.getStringSet(Consts.APP_PREFERENCES_CHATS, null);
-            ArrayList<Chat> tAr = new ArrayList<Chat>();
+            //ArrayList<Chat> tAr = new ArrayList<Chat>();
             System.out.println(set);
             for (String s : set) {
                 Chat temp = Consts.gson.fromJson(s, Chat.class);
-                tAr.add(temp);
-                chatsAr = tAr;
+                chatsAdapter.add(temp);
+                //tAr.add(temp);
+                //chatsAr = tAr;
 
             }
         }
-        //adapter.notifyDataSetChanged();
+        //chatsAdapter.notifyDataSetChanged();
     }
 
 }

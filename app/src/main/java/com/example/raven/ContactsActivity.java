@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,17 +12,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.example.raven.Model.Chat;
 import com.example.raven.Model.Contact;
 import com.example.raven.utils.Consts;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+
+import static com.example.raven.MainActivity.chatsAr;
 
 public class ContactsActivity extends Activity {
     ListView contactList;
@@ -48,6 +53,41 @@ public class ContactsActivity extends Activity {
 
         adapter=new ContactAdapter(this,contactAr);
         contactList.setAdapter(adapter);
+        System.out.println(adapter.getCount());
+        contactList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                int chatPos=999;
+                boolean isExist=false;
+                for(int i=0;i<MainActivity.chatsAdapter.getCount();i++)
+                {
+                    if(adapter.getItem(position).getId()==MainActivity.chatsAdapter.getItem(i).getAdresatId())
+                    {
+                        chatPos=i;
+                        Intent intent=new Intent(ContactsActivity.this,ChatActivity.class);
+                        intent.putExtra("ChatNumber", chatPos);
+                        startActivity(intent);
+                        isExist=true;
+                    }
+                }
+                if(!isExist) {
+                    Chat temp = new Chat();
+                    temp.setAdresatId(adapter.getItem(position).getId());
+                    String str;
+                    if (adapter.getItem(position).getName() == null) {
+                        str = "UNKNOWN";
+                    } else {
+                        str = adapter.getItem(position).getName();
+                    }
+                    temp.setAdresatName(str);
+                    MainActivity.chatsAdapter.add(temp);
+                    MainActivity.chatsAdapter.notifyDataSetChanged();
+                    Intent intent = new Intent(ContactsActivity.this, ChatActivity.class);
+
+                    startActivity(intent);
+                }
+            }
+        });
         final Contact Max= new Contact(989054056,"Max");
 
 

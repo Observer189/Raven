@@ -30,6 +30,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.example.raven.MainActivity.chatsAr;
+
 public class ChatActivity extends Activity {
     EditText editText;
     Button sendButton;
@@ -58,7 +60,9 @@ public class ChatActivity extends Activity {
         user = Consts.user;
 
         chatPos = getIntent().getIntExtra("ChatNumber", 999);
-        chat = MainActivity.chatsAr.get(chatPos);
+        if(chatPos==999)
+            chatPos=chatsAr.size()-1;
+        chat = MainActivity.chatsAdapter.getItem(chatPos);
         if (chat.getAdresatName() != null) {
             name.setText(chat.getAdresatName());
         } else {
@@ -74,8 +78,9 @@ public class ChatActivity extends Activity {
                 mes.setTime(System.currentTimeMillis());
                 chat.getMessages().add(mes);
                 adapter.notifyDataSetChanged();
+                MainActivity.chatsAdapter.notifyDataSetChanged();
                 System.out.println("local" + chat.getMessages());
-                System.out.println("global" + MainActivity.chatsAr.get(chatPos).getMessages());
+                System.out.println("global" + MainActivity.chatsAdapter.getItem(chatPos).getMessages());
 
                 String msg = "";
 
@@ -141,8 +146,8 @@ public class ChatActivity extends Activity {
 
         //Message mes=new Message(78213222,"and");
         //chat.getMessages().add(mes);
-        // adapter=new MessageAdapter(this,chat.getMessages());
-        //messageList.setAdapter(adapter);
+        // chatsAdapter=new MessageAdapter(this,chat.getMessages());
+        //messageList.setAdapter(chatsAdapter);
 
     }
 

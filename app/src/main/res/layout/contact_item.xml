@@ -10,17 +10,18 @@
         android:id="@+id/contactText1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textAppearance="?attr/textAppearanceListItem" />
+        android:background="@color/gray"
+        android:textColor="@color/orange"
+        android:textAppearance="?attr/textAppearanceListItem"
+        android:textSize="25sp"/>
 
     <TextView
         android:id="@+id/contactText2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/contactText1"
-        android:layout_alignStart="@id/contactText1"
         android:textAppearance="?attr/textAppearanceListItemSecondary"
-        android:layout_alignLeft="@id/contactText1"
+        android:background="@color/gray"
+        android:textColor="@color/white"
         android:textSize="15sp"/>
 
 </LinearLayout>
