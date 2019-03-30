@@ -20,6 +20,7 @@ import com.example.raven.Model.Message;
 import com.example.raven.Model.User;
 import com.example.raven.utils.ApiService;
 import com.example.raven.utils.Consts;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
@@ -87,7 +88,7 @@ public class MainActivity extends Activity {
         chatList.setAdapter(adapter);
 
 
-
+/*
         final Chat chat = new Chat();
         //chat.setAdresatName("");
         chat.setAdresatId(1111);
@@ -97,7 +98,7 @@ public class MainActivity extends Activity {
         chatsAr.add(chat);
         loadChats();
         adapter.notifyDataSetChanged();
-
+*/
 
 
         chatList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -176,24 +177,31 @@ public class MainActivity extends Activity {
                                         if (!isExist)//если же чата не существует то создаем его
                                         {
                                             final Chat chat = new Chat();
-                                            /*
-                                            Consts.service.getKey(Consts.user.getId()).enqueue(new Callback<SecretKey>() {
+
+                                            Consts.service.getKey(Consts.user.getId()).enqueue(new Callback<String>() {
                                                 @Override
-                                                public void onResponse(Call<SecretKey> call, Response<SecretKey> response) {
-                                                    SecretKey key = response.body();
+                                                public void onResponse(Call<String> call, Response<String> response) {
+                                                    String keyJson = response.body();
+
+                                                    GsonBuilder builder = new GsonBuilder();
+                                                    builder.registerTypeAdapter(SecretKey.class, new SecretKeyAdapter());
+                                                    Gson gson = builder.create();
+
+                                                    SecretKey key = gson.fromJson(keyJson, SecretKey.class);
                                                     chat.setKey(key);
                                                 }
                                                 @Override
-                                                public void onFailure(Call<SecretKey> call, Throwable t) {
+                                                public void onFailure(Call<String> call, Throwable t) {
 
                                                 }
                                             });
-                                            */
+
                                             chat.setAdresatId(resp.get(i).getAuthorId());
                                             chatsAr.add(chat);
-                                            adapter.notifyDataSetInvalidated();
+                                            adapter.notifyDataSetChanged();
                                             chatsAr.get(i).getMessages().add(resp.get(i));
                                             loadChats();
+
                                         }
                                     }
                                 }

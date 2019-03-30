@@ -10,20 +10,20 @@ public class Chat {
     private int id;
     private int adresatId;
     private String adresatName;
-    private SecretKey key;
+    private SecretKey key;  //НАДо УБРАТЬ
 
     private ArrayList<Message> messages;
 
     public Chat()
     {
         messages=new ArrayList<>();
-
+                              //НАДо УБРАТЬ
         try {
             key = KeyGenerator.getInstance("DES").generateKey();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
-
+                              //НАДо УБРАТЬ
     }
 
     public int getId() {
@@ -34,6 +34,7 @@ public class Chat {
         return messages;
     }
 
+                      //НАДо УБРАТЬ
     public void setKey(SecretKey key) {
         this.key = key;
     }
@@ -41,6 +42,7 @@ public class Chat {
     public SecretKey getKey() {
         return key;
     }
+                              //НАДо УБРАТЬ
 
     public int getAdresatId() {
         return adresatId;
