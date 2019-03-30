@@ -84,6 +84,9 @@ public class ChatActivity extends Activity {
 
                 String msg = "";
 
+
+
+                                                              //НАДо УБРАТЬ
                 try {
                     if (chat.getKey() != null) {
                         key = chat.getKey();
@@ -94,6 +97,8 @@ public class ChatActivity extends Activity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                                                            //НАДо УБРАТЬ
+                //msg = editText.getText().toString();        //НАДо УБРАТЬ 1
 
 
                 Consts.service.sendMessage(msg, user.getId(), chat.getAdresatId()).enqueue(new Callback<ServResponse>() {
@@ -113,6 +118,7 @@ public class ChatActivity extends Activity {
                     }
                 });
 
+                              //НАДо УБРАТЬ
                 GsonBuilder builder = new GsonBuilder();
                 builder.registerTypeAdapter(SecretKey.class, new SecretKeyAdapter());
                 Gson gson = builder.create();
@@ -121,10 +127,15 @@ public class ChatActivity extends Activity {
                 String temp = gson.toJson(key, SecretKey.class);
                 //System.out.println(temp);
                 //System.out.println(Consts.gson.fromJson(temp, Key.class).toString());
-                Consts.service.sendKey(temp).enqueue(new Callback<ServResponse>() {
+
+
+                                                    //НАДо УБРАТЬ
+                Consts.service.sendKey(temp, user.getId(), chat.getAdresatId()).enqueue(new Callback<ServResponse>() {
                     @Override
                     public void onResponse(Call<ServResponse> call, Response<ServResponse> response) {
-                        //name.setText(response.body().getMessage());
+                        if (response.body() != null) {
+                            name.setText(response.body().getMessage());
+                        }
                     }
 
                     @Override
@@ -137,7 +148,7 @@ public class ChatActivity extends Activity {
                         }
                     }
                 });
-
+                                                         //НАДо УБРАТЬ
 
                 editText.setText("");
                 onStop();
