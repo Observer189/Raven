@@ -11,6 +11,8 @@ import com.google.gson.JsonSerializer;
 
 import java.lang.reflect.Type;
 
+import javax.crypto.spec.SecretKeySpec;
+
 public class SecretKeyAdapter implements JsonSerializer, JsonDeserializer {
 
     private static final String CLASSNAME = "CLASSNAME";
@@ -20,9 +22,7 @@ public class SecretKeyAdapter implements JsonSerializer, JsonDeserializer {
     @Override
     public Object deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
         JsonObject jsonObject = json.getAsJsonObject();
-        JsonPrimitive prim = (JsonPrimitive) jsonObject.get(CLASSNAME);
-        String className = prim.getAsString();
-        Class klass = getObjectClass(className);
+        Class klass = SecretKeySpec.class;
         return context.deserialize(jsonObject.get(DATA), klass);
     }
 

@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.example.raven.Model.Chat;
 import com.example.raven.Model.Message;
 import com.example.raven.Model.User;
+import com.example.raven.crypt.Crypting;
 import com.example.raven.utils.ApiService;
 import com.example.raven.utils.Consts;
 import com.google.gson.Gson;
@@ -38,7 +39,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends Activity {
     //final String baseUrl="https://intense-waters-91005.herokuapp.com";
-    final String baseUrl = "http://192.168.43.104:8080"; //"http://192.168.1.105:8080"
+    final String baseUrl = "http://192.168.1.105:8080"; //"http://192.168.43.104:8080"
 
     Context context = this;
     boolean isRegistred;
@@ -171,37 +172,55 @@ public class MainActivity extends Activity {
                                             if (resp.get(i).getAuthorId() == chatsAr.get(j).getAdresatId())//Если чат с адресантом существует то добавляем сообщение в массив
                                             {
                                                 isExist = true;
-                                                chatsAr.get(j).getMessages().add(resp.get(i));
+                                                Message message = resp.get(i);
+
+                                                GsonBuilder builder = new GsonBuilder();
+                                                builder.registerTypeAdapter(SecretKey.class, new SecretKeyAdapter());
+                                                Gson gson = builder.create();
+
+                                                String keystr = message.getKey();
+
+                                                SecretKey key = gson.fromJson(keystr, SecretKey.class);
+
+
+
+                                                try {
+                                                    String string = Crypting.decrypt(message.getText(), key);
+                                                    message.setText(string);
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+                                                chatsAr.get(j).getMessages().add(message);
                                             }
                                         }
                                         if (!isExist)//если же чата не существует то создаем его
                                         {
-                                            final Chat chat = new Chat();
 
-                                            Consts.service.getKey(Consts.user.getId()).enqueue(new Callback<String>() {
-                                                @Override
-                                                public void onResponse(Call<String> call, Response<String> response) {
-                                                    String keyJson = response.body();
+                                            Message message = resp.get(i);
 
-                                                    GsonBuilder builder = new GsonBuilder();
-                                                    builder.registerTypeAdapter(SecretKey.class, new SecretKeyAdapter());
-                                                    Gson gson = builder.create();
+                                            GsonBuilder builder = new GsonBuilder();
+                                            builder.registerTypeAdapter(SecretKey.class, new SecretKeyAdapter());
+                                            Gson gson = builder.create();
 
-                                                    SecretKey key = gson.fromJson(keyJson, SecretKey.class);
-                                                    chat.setKey(key);
-                                                }
-                                                @Override
-                                                public void onFailure(Call<String> call, Throwable t) {
+                                            System.out.println(message.getKey());
 
-                                                }
-                                            });
+                                            SecretKey key = gson.fromJson(message.getKey(), SecretKey.class);
+
+                                            final Chat chat = new Chat(key);
 
                                             chat.setAdresatId(resp.get(i).getAuthorId());
                                             chatsAr.add(chat);
+                                            chatsAdapter.notifyDataSetChanged();
 
-                                            chatsAdapter.notifyDataSetInvalidated();
 
-                                            chatsAr.get(i).getMessages().add(resp.get(i));
+                                            try {
+                                                System.out.println(Consts.gson.toJson(chat.getKey()));
+                                                String string = Crypting.decrypt(message.getText(), chat.getKey());
+                                                message.setText(string);
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                            chatsAr.get(chatsAr.indexOf(chat)).getMessages().add(message);
                                             loadChats();
 
                                         }

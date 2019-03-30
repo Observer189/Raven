@@ -6,15 +6,33 @@ public class Message {
     private int adrId;
     private String text;
     private long time;
+    private String key;
+
     public Message()
     {
 
     }
+
+    public Message(int authorId, int adrId, String text, String key) {
+        this.authorId = authorId;
+        this.adrId = adrId;
+        this.text = text;
+        this.key = key;
+    }
+
     public Message(int authorId,int adrId,String text)
     {
         this.authorId =authorId;
         this.adrId=adrId;
         this.text=text;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return key;
     }
 
     public String getAuthorName() {

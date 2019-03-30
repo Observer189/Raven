@@ -14,6 +14,12 @@ public class Chat {
 
     private ArrayList<Message> messages;
 
+    public Chat(SecretKey key)
+    {
+        messages=new ArrayList<>();
+        this.key = key;
+    }
+
     public Chat()
     {
         messages=new ArrayList<>();
