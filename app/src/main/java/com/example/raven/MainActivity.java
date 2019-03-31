@@ -39,21 +39,22 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends Activity {
     //final String baseUrl="https://intense-waters-91005.herokuapp.com";
-    final String baseUrl = "http://192.168.1.105:8080"; //"http://192.168.43.104:8080"
-
+    //final String baseUrl = "http://192.168.1.105:8080";
+    final String baseUrl="http://192.168.1.104:8080";
     Context context = this;
     boolean isRegistred;
     User user;
 
 
-    TextView text;
+    TextView textNameUser;
+    TextView textIdUser;
     Button contactButton;
     ListView chatList;
     Thread thread;
 
     static ChatsAdapter chatsAdapter;
 
-    static ArrayList<Chat> chatsAr;
+   static ArrayList<Chat> chatsAr;
     //Имя файла настроек
 
 
@@ -76,7 +77,8 @@ public class MainActivity extends Activity {
         Consts.gson = Consts.gsonBuilder.create();
 
 
-        text = (TextView) findViewById(R.id.text_appName);
+        textNameUser = (TextView) findViewById(R.id.text_userName);
+        textIdUser=findViewById(R.id.text_userId);
         contactButton = (Button) findViewById(R.id.contactButton);
         chatList = findViewById(R.id.chatList);
         Consts.user = new User();
@@ -132,6 +134,10 @@ public class MainActivity extends Activity {
                                     Consts.editor.putString(Consts.APP_PREFERENCES_NAME, nameText.getText().toString());
                                     Consts.editor.putInt(Consts.APP_PREFERENCES_Id, Integer.valueOf(idText.getText().toString()));
                                     Consts.editor.apply();
+                                    user.setName(nameText.getText().toString());
+                                    user.setId(Integer.valueOf(idText.getText().toString()));
+                                    textNameUser.setText(user.getName());
+                                    textIdUser.setText("id:"+user.getId());
                                 }
 
                             });
@@ -142,8 +148,12 @@ public class MainActivity extends Activity {
 
 
         }
-        user.setName(Consts.sp.getString(Consts.APP_PREFERENCES_NAME, ""));
-        user.setId(Consts.sp.getInt(Consts.APP_PREFERENCES_Id, 0));
+        else {
+            Consts.user.setName(Consts.sp.getString(Consts.APP_PREFERENCES_NAME, ""));
+            Consts.user.setId(Consts.sp.getInt(Consts.APP_PREFERENCES_Id, 0));
+            textNameUser.setText(user.getName());
+            textIdUser.setText("id:"+user.getId());
+        }
 
         contactButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -168,8 +178,8 @@ public class MainActivity extends Activity {
                                 if (resp != null){
                                     for (int i = 0; i < resp.size(); i++) {
                                         boolean isExist = false;
-                                        for (int j = 0; j < chatsAr.size(); j++) {
-                                            if (resp.get(i).getAuthorId() == chatsAr.get(j).getAdresatId())//Если чат с адресантом существует то добавляем сообщение в массив
+                                        for (int j = 0; j < chatsAdapter.getCount(); j++) {
+                                            if (resp.get(i).getAuthorId() == chatsAdapter.getItem(j).getAdresatId())//Если чат с адресантом существует то добавляем сообщение в массив
                                             {
                                                 isExist = true;
                                                 Message message = resp.get(i);
@@ -190,12 +200,16 @@ public class MainActivity extends Activity {
                                                 } catch (Exception e) {
                                                     e.printStackTrace();
                                                 }
-                                                chatsAr.get(j).getMessages().add(message);
+                                                chatsAdapter.getItem(j).getMessages().add(message);
+                                                chatsAdapter.notifyDataSetChanged();
+                                                if(ChatActivity.adapter!=null) {
+                                                    ChatActivity.adapter.notifyDataSetChanged();
+                                                }
                                             }
                                         }
                                         if (!isExist)//если же чата не существует то создаем его
                                         {
-
+                                            System.out.println("Work please");
                                             Message message = resp.get(i);
 
                                             GsonBuilder builder = new GsonBuilder();
@@ -209,8 +223,7 @@ public class MainActivity extends Activity {
                                             final Chat chat = new Chat(key);
 
                                             chat.setAdresatId(resp.get(i).getAuthorId());
-                                            chatsAr.add(chat);
-                                            chatsAdapter.notifyDataSetChanged();
+
 
 
                                             try {
@@ -220,8 +233,13 @@ public class MainActivity extends Activity {
                                             } catch (Exception e) {
                                                 e.printStackTrace();
                                             }
-                                            chatsAr.get(chatsAr.indexOf(chat)).getMessages().add(message);
-                                            loadChats();
+                                            chatsAdapter.add(chat);
+                                            chatsAdapter.getItem(chatsAdapter.getPosition(chat)).getMessages().add(message);
+                                            chatsAdapter.notifyDataSetChanged();
+                                            //loadChats();
+                                            if(ChatActivity.adapter!=null) {
+                                                ChatActivity.adapter.notifyDataSetChanged();
+                                            }
 
                                         }
                                     }
@@ -243,8 +261,8 @@ public class MainActivity extends Activity {
             }
         });
         thread.start();
-
-
+        textNameUser.setText(user.getName());
+        textIdUser.setText("id:"+user.getId());
     }
 
     @Override

@@ -32,7 +32,7 @@ public class ChatActivity extends Activity {
     TextView name;
     TextView id;
     ListView messageList;
-    MessageAdapter adapter;
+    static MessageAdapter adapter;
 
     private SecretKey key = null;
 

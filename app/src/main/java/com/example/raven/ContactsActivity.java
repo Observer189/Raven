@@ -31,6 +31,7 @@ import static com.example.raven.MainActivity.chatsAr;
 public class ContactsActivity extends Activity {
     ListView contactList;
     Button addButton;
+    Button backButton;
     ContactAdapter adapter;
 
     ArrayList<Contact> contactAr;//для сохранения в листвью
@@ -47,6 +48,7 @@ public class ContactsActivity extends Activity {
         setContentView(R.layout.activity_contacts);
         contactList=(ListView) findViewById(R.id.contactList);
         addButton=findViewById(R.id.addButton);
+        backButton=findViewById(R.id.backButton);
         contactAr=new ArrayList<Contact>();
 
         loadContacts();
@@ -122,6 +124,12 @@ public class ContactsActivity extends Activity {
                 alertDialog.show();
 
 
+            }
+        });
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
             }
         });
     }
