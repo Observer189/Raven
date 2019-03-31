@@ -1,7 +1,6 @@
 package com.example.raven;
 
 import android.app.Activity;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,17 +10,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.raven.Model.Chat;
-import com.example.raven.Model.Key;
 import com.example.raven.Model.Message;
 import com.example.raven.Model.User;
 import com.example.raven.crypt.Crypting;
-import com.example.raven.utils.ApiService;
 import com.example.raven.utils.Consts;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-
-import java.lang.reflect.Type;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -86,7 +80,7 @@ public class ChatActivity extends Activity {
 
 
 
-                                                              //НАДо УБРАТЬ
+
                 try {
                     if (chat.getKey() != null) {
                         key = chat.getKey();
@@ -97,11 +91,20 @@ public class ChatActivity extends Activity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                                                            //НАДо УБРАТЬ
-                //msg = editText.getText().toString();        //НАДо УБРАТЬ 1
+
+                //msg = editText.getText().toString();
+
+                GsonBuilder builder = new GsonBuilder();
+                builder.registerTypeAdapter(SecretKey.class, new SecretKeyAdapter());
+                Gson gson = builder.create();
+
+                //String temp = gson.toJson(new Key(user.getId(), chat.getAdresatId(), key), Key.class);
+                String temp = gson.toJson(key, SecretKey.class);
+                //System.out.println(temp);
+                //System.out.println(Consts.gson.fromJson(temp, Key.class).toString());
 
 
-                Consts.service.sendMessage(msg, user.getId(), chat.getAdresatId()).enqueue(new Callback<ServResponse>() {
+                Consts.service.sendMessage(msg, user.getId(), chat.getAdresatId(), temp).enqueue(new Callback<ServResponse>() {
                     @Override
                     public void onResponse(Call<ServResponse> call, Response<ServResponse> response) {
                         //name.setText(response.body().getMessage());
@@ -118,37 +121,6 @@ public class ChatActivity extends Activity {
                     }
                 });
 
-                              //НАДо УБРАТЬ
-                GsonBuilder builder = new GsonBuilder();
-                builder.registerTypeAdapter(SecretKey.class, new SecretKeyAdapter());
-                Gson gson = builder.create();
-
-                //String temp = gson.toJson(new Key(user.getId(), chat.getAdresatId(), key), Key.class);
-                String temp = gson.toJson(key, SecretKey.class);
-                //System.out.println(temp);
-                //System.out.println(Consts.gson.fromJson(temp, Key.class).toString());
-
-
-                                                    //НАДо УБРАТЬ
-                Consts.service.sendKey(temp, user.getId(), chat.getAdresatId()).enqueue(new Callback<ServResponse>() {
-                    @Override
-                    public void onResponse(Call<ServResponse> call, Response<ServResponse> response) {
-                        if (response.body() != null) {
-                            name.setText(response.body().getMessage());
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ServResponse> call, Throwable t) {
-                        Toast.makeText(ChatActivity.this, "An error occurred during networking", Toast.LENGTH_SHORT).show();
-                        try {
-                            throw (t);
-                        } catch (Throwable throwable) {
-                            throwable.printStackTrace();
-                        }
-                    }
-                });
-                                                         //НАДо УБРАТЬ
 
                 editText.setText("");
                 onStop();
