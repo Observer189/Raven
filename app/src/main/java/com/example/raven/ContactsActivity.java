@@ -120,6 +120,8 @@ public class ContactsActivity extends Activity {
                                 });
                 //Создаем AlertDialog:
                 AlertDialog alertDialog = mDialogBuilder.create();
+                alertDialog.getWindow().setBackgroundDrawableResource(R.color.darcGray);
+
                 //и отображаем его:
                 alertDialog.show();
 

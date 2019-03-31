@@ -38,9 +38,9 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends Activity {
-    //final String baseUrl="https://intense-waters-91005.herokuapp.com";
+    final String baseUrl="https://intense-waters-91005.herokuapp.com";
     //final String baseUrl = "http://192.168.1.105:8080";
-    final String baseUrl="http://192.168.1.104:8080";
+    //final String baseUrl="http://192.168.1.104:8080";
     Context context = this;
     boolean isRegistred;
     User user;
@@ -143,8 +143,10 @@ public class MainActivity extends Activity {
                             });
             //Создаем AlertDialog:
             AlertDialog alertDialog = mDialogBuilder.create();
+            alertDialog.getWindow().setBackgroundDrawableResource(R.color.darcGray);
             //и отображаем его:
             alertDialog.show();
+
 
 
         }
