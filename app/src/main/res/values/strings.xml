@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">Raven</string>
     <string name="title_activity_contacts">ContactsActivity</string>
+    <string name="contacts">Contacts</string>
+    <string name="enter_message">Enter message</string>
+    <string name="send">SEND</string>
+    <string name="back">back</string>
+    <string name="add">add</string>
+    <string name="enter_name">Enter name</string>
+    <string name="enter_id">Enter ID</string>
 </resources>

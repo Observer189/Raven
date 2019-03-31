@@ -1,6 +1,7 @@
 package com.example.raven;
 
 import android.app.Activity;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -65,9 +66,14 @@ public class ChatActivity extends Activity {
         id.setText("id:" + String.valueOf(chat.getAdresatId()));
         adapter = new MessageAdapter(this, chat.getMessages());
         messageList.setAdapter(adapter);
+
+        final MediaPlayer mp = MediaPlayer.create(this, R.raw.corbie_sound);
+
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mp.start();
+
                 Message mes = new Message(user.getId(), chat.getAdresatId(), editText.getText().toString());
                 mes.setTime(System.currentTimeMillis());
                 chat.getMessages().add(mes);
