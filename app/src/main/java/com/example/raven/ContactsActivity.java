@@ -114,7 +114,7 @@ public class ContactsActivity extends Activity {
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int id) {
-                                        if ((!nameText.getText().toString().isEmpty()) && (!idText.getText().toString().isEmpty())) {
+                                        if ((!nameText.getText().toString().isEmpty()) && (!idText.getText().toString().isEmpty())&&(idText.getText().toString().length()<9)) {
                                             Contact contact = new Contact(Integer.valueOf(idText.getText().toString()), nameText.getText().toString());
                                             contactAr.add(contact);
                                             adapter.notifyDataSetChanged();
@@ -129,7 +129,8 @@ public class ContactsActivity extends Activity {
                                             }
                                         }
                                         else {
-                                            Toast.makeText(context, "You entered incorrect data", Toast.LENGTH_LONG);
+                                            Toast toast=Toast.makeText(context, "You entered incorrect data", Toast.LENGTH_LONG);
+                                            toast.show();
                                         }
                                     }
 

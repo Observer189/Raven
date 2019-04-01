@@ -139,7 +139,7 @@ public class MainActivity extends Activity {
                     posButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            if((!nameText.getText().toString().isEmpty()) && (!idText.getText().toString().isEmpty())) {
+                            if((!nameText.getText().toString().isEmpty()) && (!idText.getText().toString().isEmpty())&&(idText.getText().toString().length()<9)) {
                                 Consts.editor.putString(Consts.APP_PREFERENCES_NAME, nameText.getText().toString());
                                 Consts.editor.putInt(Consts.APP_PREFERENCES_Id, Integer.valueOf(idText.getText().toString()));
                                 Consts.editor.apply();
@@ -152,7 +152,8 @@ public class MainActivity extends Activity {
                             else
                             {
 
-                                Toast.makeText(dialog.getContext(),"Вы ввели неверные данные",Toast.LENGTH_LONG);
+                                Toast toast=Toast.makeText(context, "You entered incorrect data", Toast.LENGTH_LONG);
+                                toast.show();
                             }
                         }
                     });
