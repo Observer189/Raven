@@ -157,6 +157,7 @@ public class MainActivity extends Activity {
                     });
                 }
             });
+            dialog.getWindow().setBackgroundDrawableResource(R.color.darcGray);
              dialog.show();
            /* mDialogBuilder
                     .setCancelable(false)
@@ -314,7 +315,7 @@ public class MainActivity extends Activity {
         saveChats();
     }
 
-    public void saveChats() {
+    public static void saveChats() {
         Set<String> set = new HashSet<>();
         for (int i = 0; i < chatsAdapter.getCount(); i++) {
 

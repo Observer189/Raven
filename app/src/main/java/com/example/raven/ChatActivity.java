@@ -143,6 +143,7 @@ public class ChatActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
+        MainActivity.saveChats();
         //System.out.println(chat.getMessages());
     }
 }

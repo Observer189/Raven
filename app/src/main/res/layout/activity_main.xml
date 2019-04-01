@@ -29,14 +29,14 @@
                 android:layout_height="wrap_content"
                 android:background="@color/darcGray"
                 android:textColor="@color/orange"
-                android:textSize="35sp"/>
+                android:textSize="25sp"/>
             <TextView
                 android:id="@+id/text_userId"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/darcGray"
                 android:textColor="@color/white"
-                android:textSize="25sp"/>
+                android:textSize="15sp"/>
         </LinearLayout>
 
         <Button

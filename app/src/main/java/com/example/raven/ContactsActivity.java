@@ -128,8 +128,9 @@ public class ContactsActivity extends Activity {
                                                 }
                                             }
                                         }
-                                        else
-                                            Toast.makeText(context,"Вы ввели неверные данные",Toast.LENGTH_LONG);
+                                        else {
+                                            Toast.makeText(context, "You entered incorrect data", Toast.LENGTH_LONG);
+                                        }
                                     }
 
                                 });
