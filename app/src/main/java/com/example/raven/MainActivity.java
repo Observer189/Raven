@@ -13,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.raven.Model.Chat;
 import com.example.raven.Model.Message;
@@ -119,13 +120,45 @@ public class MainActivity extends Activity {
             LayoutInflater li = LayoutInflater.from(context);
             View registerView = li.inflate(R.layout.register, null);
 
-            AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(context);
-            mDialogBuilder.setView(registerView);
+           // AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(context);
+            //mDialogBuilder.setView(registerView);
 
             final EditText nameText = registerView.findViewById(R.id.nameText);
             final EditText idText = registerView.findViewById(R.id.idText);
 
-            mDialogBuilder
+            final AlertDialog dialog = new AlertDialog.Builder(context)
+                    .setView(registerView)
+                    .setPositiveButton(android.R.string.ok, null) //Set to null. We override the onclick
+                    //.setCancelable(false)
+                    .create();
+            dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialogInterface) {
+                    Button posButton = ((AlertDialog) dialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                    posButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if((!nameText.getText().toString().isEmpty()) && (!idText.getText().toString().isEmpty())) {
+                                Consts.editor.putString(Consts.APP_PREFERENCES_NAME, nameText.getText().toString());
+                                Consts.editor.putInt(Consts.APP_PREFERENCES_Id, Integer.valueOf(idText.getText().toString()));
+                                Consts.editor.apply();
+                                user.setName(nameText.getText().toString());
+                                user.setId(Integer.valueOf(idText.getText().toString()));
+                                textNameUser.setText(user.getName());
+                                textIdUser.setText("id:" + user.getId());
+                                dialog.dismiss();
+                            }
+                            else
+                            {
+
+                                Toast.makeText(dialog.getContext(),"Вы ввели неверные данные",Toast.LENGTH_LONG);
+                            }
+                        }
+                    });
+                }
+            });
+             dialog.show();
+           /* mDialogBuilder
                     .setCancelable(false)
                     .setPositiveButton("OK",
                             new DialogInterface.OnClickListener() {
@@ -138,6 +171,7 @@ public class MainActivity extends Activity {
                                     user.setId(Integer.valueOf(idText.getText().toString()));
                                     textNameUser.setText(user.getName());
                                     textIdUser.setText("id:"+user.getId());
+
                                 }
 
                             });
@@ -145,7 +179,7 @@ public class MainActivity extends Activity {
             AlertDialog alertDialog = mDialogBuilder.create();
             alertDialog.getWindow().setBackgroundDrawableResource(R.color.darcGray);
             //и отображаем его:
-            alertDialog.show();
+            alertDialog.show();*/
 
 
 

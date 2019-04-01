@@ -17,6 +17,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.raven.Model.Chat;
 import com.example.raven.Model.Contact;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.example.raven.MainActivity.chatsAdapter;
 import static com.example.raven.MainActivity.chatsAr;
 
 public class ContactsActivity extends Activity {
@@ -112,9 +114,22 @@ public class ContactsActivity extends Activity {
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int id) {
-                                        contactAr.add(new Contact(Integer.valueOf(idText.getText().toString()),nameText.getText().toString()));
-                                        adapter.notifyDataSetChanged();
-                                        System.out.println(contactAr.size());
+                                        if ((!nameText.getText().toString().isEmpty()) && (!idText.getText().toString().isEmpty())) {
+                                            Contact contact = new Contact(Integer.valueOf(idText.getText().toString()), nameText.getText().toString());
+                                            contactAr.add(contact);
+                                            adapter.notifyDataSetChanged();
+                                            for (int i = 0; i < MainActivity.chatsAdapter.getCount(); i++) {
+                                                Chat temp = chatsAdapter.getItem(i);
+                                                if (temp.getAdresatName() == null) {
+                                                    if (temp.getAdresatId() == contact.getId()) {
+                                                        temp.setAdresatName(contact.getName());
+                                                        chatsAdapter.notifyDataSetChanged();
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else
+                                            Toast.makeText(context,"Вы ввели неверные данные",Toast.LENGTH_LONG);
                                     }
 
                                 });
