@@ -24,7 +24,7 @@
             android:layout_height="match_parent"
             android:layout_weight="4"
             android:background="@color/darcGray"
-            android:text="@string/contacts"
+            android:text="  Contacts"
             android:gravity="center_vertical"
             android:textSize="25sp"
             android:textColor="@color/orange"/>

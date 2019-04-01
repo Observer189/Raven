@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:textColor="@color/white"
             android:gravity="start"
-            android:textSize="10sp"/>
+            android:textSize="13sp"/>
 
     </LinearLayout>
     <ListView
@@ -47,7 +47,7 @@
             android:id="@+id/sendText"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:hint="@string/enter_message"
+            android:hint="    Enter message"
             android:layout_weight="8"
             android:inputType="text"
             android:textSize="15sp"

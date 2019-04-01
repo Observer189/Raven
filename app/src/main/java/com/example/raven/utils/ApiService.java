@@ -19,6 +19,4 @@ public interface ApiService {
 
     @GET("/get")
     Call<ArrayList<Message>> getMessages(@Query("id") int id);
-
-
 }
