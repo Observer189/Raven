@@ -16,7 +16,7 @@
 
         android:textColor="@color/orange"
         android:background="@color/gray"
-        android:hint="Enter name"
+        android:hint="@string/enter_name"
         android:inputType="text"
         android:textSize="20sp" >
     </EditText>
@@ -27,7 +27,7 @@
         android:layout_weight="1"
         android:ems="10"
         android:inputType="number"
-        android:hint="Enter ID"
+        android:hint="@string/enter_id"
         android:textColor="@color/orange"
         android:background="@color/gray"/>
 
