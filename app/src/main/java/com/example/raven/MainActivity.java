@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -199,9 +200,12 @@ public class MainActivity extends Activity {
             }
         });
 
+        final MediaPlayer mp = MediaPlayer.create(this, R.raw.corbie_sound);
+
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
+
                 Timer timer = new Timer();
                 TimerTask timerTask = new TimerTask() {
                     @Override
@@ -214,6 +218,7 @@ public class MainActivity extends Activity {
                                 if (resp != null){
                                     for (int i = 0; i < resp.size(); i++) {
                                         boolean isExist = false;
+                                        mp.start();
                                         for (int j = 0; j < chatsAdapter.getCount(); j++) {
                                             if (resp.get(i).getAuthorId() == chatsAdapter.getItem(j).getAdresatId())//Если чат с адресантом существует то добавляем сообщение в массив
                                             {
