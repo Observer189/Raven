@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,7 +51,7 @@ public class MainActivity extends Activity {
 
     TextView textNameUser;
     TextView textIdUser;
-    Button contactButton;
+    ImageButton contactButton;
     ListView chatList;
     Thread thread;
 
@@ -81,7 +82,7 @@ public class MainActivity extends Activity {
 
         textNameUser = (TextView) findViewById(R.id.text_userName);
         textIdUser=findViewById(R.id.text_userId);
-        contactButton = (Button) findViewById(R.id.contactButton);
+        contactButton =  findViewById(R.id.contactButton);
         chatList = findViewById(R.id.chatList);
         Consts.user = new User();
         user = Consts.user;
