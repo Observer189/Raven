@@ -11,18 +11,20 @@ public class Chat {
     private int adresatId;
     private String adresatName;
     private SecretKey key;  //НАДо УБРАТЬ
-
+    private int unreadCount;
     private ArrayList<Message> messages;
 
     public Chat(SecretKey key)
     {
         messages=new ArrayList<>();
+        unreadCount =0;
         this.key = key;
     }
 
     public Chat()
     {
         messages=new ArrayList<>();
+        unreadCount =0;
                               //НАДо УБРАТЬ
         try {
             key = KeyGenerator.getInstance("DES").generateKey();
@@ -79,5 +81,13 @@ public class Chat {
 
     public void setMessages(ArrayList<Message> messages) {
         this.messages = messages;
+    }
+
+    public int getUnreadCount() {
+        return unreadCount;
+    }
+
+    public void setUnreadCount(int unreadCount) {
+        this.unreadCount = unreadCount;
     }
 }

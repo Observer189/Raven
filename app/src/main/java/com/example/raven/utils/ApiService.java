@@ -19,4 +19,7 @@ public interface ApiService {
 
     @GET("/get")
     Call<ArrayList<Message>> getMessages(@Query("id") int id);
+
+    @POST("/register")
+    Call<Integer> register(@Query("id") int id);
 }

@@ -26,5 +26,5 @@ public class Consts {
 
     public static User user;
 
-    public static final long requestDelay=1000;
+    public static final long requestDelay=5000;
 }

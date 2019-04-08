@@ -25,6 +25,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.example.raven.MainActivity.chatsAdapter;
 import static com.example.raven.MainActivity.chatsAr;
 
 public class ChatActivity extends Activity {
@@ -143,6 +144,8 @@ public class ChatActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
+        chat.setUnreadCount(0);
+        chatsAdapter.notifyDataSetChanged();
         MainActivity.saveChats();
         //System.out.println(chat.getMessages());
     }

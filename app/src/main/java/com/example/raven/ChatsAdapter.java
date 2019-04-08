@@ -3,6 +3,7 @@ package com.example.raven;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,6 +52,20 @@ public class ChatsAdapter extends ArrayAdapter<Chat> {
         if(chat.getLastMessage()!=null)
         message.setText(chat.getLastMessage().getText());
 
+        TextView unread = convertView.findViewById(R.id.unreadMes);
+        if(chat.getUnreadCount()>0) {
+            unread.setText(String.valueOf(chat.getUnreadCount()));
+            unread.setVisibility(View.VISIBLE);
+            if(chat.getUnreadCount()>99)
+            {
+                unread.setText("99+");
+                unread.setTextSize(TypedValue.COMPLEX_UNIT_DIP,8);
+            }
+        }
+        else
+        {
+            unread.setVisibility(View.INVISIBLE);
+        }
         return convertView;
     }
 }

@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,6 +27,7 @@ import com.example.raven.utils.Consts;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,10 +44,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends Activity {
     final String baseUrl="https://intense-waters-91005.herokuapp.com";
+    //final String baseUrl="http://192.168.0.56:8080";
     //final String baseUrl = "http://192.168.1.105:8080";
     //final String baseUrl="http://192.168.1.104:8080";
     Context context = this;
     boolean isRegistred;
+    static int isIdExist=100;
     User user;
 
 
@@ -113,6 +117,7 @@ public class MainActivity extends Activity {
                 Intent intent = new Intent(MainActivity.this, ChatActivity.class);
                 //String transfer=Consts.gson.toJson(chatsAr.get(position));
                 //intent.putExtra("Chat",transfer);
+                //chatsAdapter.getItem(position).setUnreadCount(0);
                 intent.putExtra("ChatNumber", position);
                 startActivity(intent);
             }
@@ -141,14 +146,29 @@ public class MainActivity extends Activity {
                         @Override
                         public void onClick(View view) {
                             if((!nameText.getText().toString().isEmpty()) && (!idText.getText().toString().isEmpty())&&(idText.getText().toString().length()<9)) {
-                                Consts.editor.putString(Consts.APP_PREFERENCES_NAME, nameText.getText().toString());
-                                Consts.editor.putInt(Consts.APP_PREFERENCES_Id, Integer.valueOf(idText.getText().toString()));
-                                Consts.editor.apply();
-                                user.setName(nameText.getText().toString());
-                                user.setId(Integer.valueOf(idText.getText().toString()));
-                                textNameUser.setText(user.getName());
-                                textIdUser.setText("id:" + user.getId());
-                                dialog.dismiss();
+                                 long startTime=System.currentTimeMillis();
+                                 WaitForResponseTask task=new WaitForResponseTask(Integer.valueOf(idText.getText().toString()));
+                                 task.execute();
+
+                                if(isIdExist==1)
+                                {
+                                    Consts.editor.putString(Consts.APP_PREFERENCES_NAME, nameText.getText().toString());
+                                    Consts.editor.putInt(Consts.APP_PREFERENCES_Id, Integer.valueOf(idText.getText().toString()));
+                                    Consts.editor.apply();
+                                    user.setName(nameText.getText().toString());
+                                    user.setId(Integer.valueOf(idText.getText().toString()));
+                                    textNameUser.setText(user.getName());
+                                    textIdUser.setText("id:" + user.getId());
+                                    dialog.dismiss();
+                                }
+                                else if(isIdExist==0)
+                                {
+                                    Toast.makeText(MainActivity.this, "User with this id is already exist", Toast.LENGTH_SHORT).show();
+                                }
+                                else
+                                {
+                                    Toast.makeText(MainActivity.this, "An error occurred during networking", Toast.LENGTH_SHORT).show();
+                                }
                             }
                             else
                             {
@@ -245,6 +265,7 @@ public class MainActivity extends Activity {
                                                     e.printStackTrace();
                                                 }
                                                 chatsAdapter.getItem(j).getMessages().add(message);
+                                                chatsAdapter.getItem(j).setUnreadCount(chatsAdapter.getItem(j).getUnreadCount()+1);
                                                 chatsAdapter.notifyDataSetChanged();
                                                 if(ChatActivity.adapter!=null) {
                                                     ChatActivity.adapter.notifyDataSetChanged();
@@ -279,6 +300,7 @@ public class MainActivity extends Activity {
                                             }
                                             chatsAdapter.add(chat);
                                             chatsAdapter.getItem(chatsAdapter.getPosition(chat)).getMessages().add(message);
+                                            chatsAdapter.getItem(chatsAdapter.getPosition(chat)).setUnreadCount(resp.size());
                                             chatsAdapter.notifyDataSetChanged();
                                             //loadChats();
                                             if(ChatActivity.adapter!=null) {
@@ -312,7 +334,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onRestart() {
         //loadChats();
-        //chatsAdapter.notifyDataSetChanged();
+        chatsAdapter.notifyDataSetChanged();
         super.onRestart();
     }
 
@@ -349,6 +371,33 @@ public class MainActivity extends Activity {
             }
         }
         //chatsAdapter.notifyDataSetChanged();
+    }
+    class WaitForResponseTask extends AsyncTask<Void,Void,Void>
+    {
+        int id;
+        int resp;
+        public WaitForResponseTask(int id)
+        {
+            this.id=id;
+            resp=100;
+        }
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                resp=Consts.service.register(id).execute().body();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            isIdExist=resp;
+            System.out.println(isIdExist);
+        }
     }
 
 }

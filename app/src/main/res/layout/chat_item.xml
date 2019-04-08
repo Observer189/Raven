@@ -29,6 +29,24 @@
                 android:textSize="12sp"
                 android:gravity="top"/>
         </LinearLayout>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/gray">
+            <TextView
+                android:id="@+id/unreadMes"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_centerHorizontal="true"
+                android:layout_alignParentBottom="true"
+                android:textColor="@color/gray"
+                android:background="@drawable/circle"
+                android:textSize="12dp"
+                android:gravity="center"/>
+        </RelativeLayout>
+
+
         <TextView
             android:id="@+id/mesTime"
             android:layout_width="0dp"
@@ -37,7 +55,7 @@
             android:background="@color/gray"
             android:textColor="@color/orange"
             android:gravity="right|bottom"
-            android:textSize="20sp"/>
+            android:textSize="15sp"/>
     </LinearLayout>
     <TextView
         android:id="@+id/lastMessage"

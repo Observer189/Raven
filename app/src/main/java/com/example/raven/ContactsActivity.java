@@ -9,8 +9,11 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -69,6 +72,8 @@ public class ContactsActivity extends Activity {
                     if(adapter.getItem(position).getId()==MainActivity.chatsAdapter.getItem(i).getAdresatId())
                     {
                         chatPos=i;
+                        adapter.getItem(position).setChat(MainActivity.chatsAdapter.getItem(chatPos));
+                        adapter.notifyDataSetChanged();
                         Intent intent=new Intent(ContactsActivity.this,ChatActivity.class);
                         intent.putExtra("ChatNumber", chatPos);
                         startActivity(intent);
@@ -85,6 +90,8 @@ public class ContactsActivity extends Activity {
                         str = adapter.getItem(position).getName();
                     }
                     temp.setAdresatName(str);
+                    adapter.getItem(position).setChat(temp);
+                    adapter.notifyDataSetChanged();
                     MainActivity.chatsAdapter.add(temp);
                     MainActivity.chatsAdapter.notifyDataSetChanged();
                     Intent intent = new Intent(ContactsActivity.this, ChatActivity.class);
@@ -93,6 +100,77 @@ public class ContactsActivity extends Activity {
                 }
             }
         });
+        contactList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int pos, long id) {
+                final int position=pos;
+
+                PopupMenu popupMenu = new PopupMenu(ContactsActivity.this, view);
+                popupMenu.inflate(R.menu.contact_popmenu);
+
+
+                popupMenu
+                        .setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+                                switch (item.getItemId())
+                                {
+                                    case R.id.openChat:
+                                        int chatPos=999;
+                                        boolean isExist=false;
+                                        for(int i=0;i<MainActivity.chatsAdapter.getCount();i++)
+                                        {
+                                            if(adapter.getItem(position).getId()==MainActivity.chatsAdapter.getItem(i).getAdresatId())
+                                            {
+                                                chatPos=i;
+                                                adapter.getItem(position).setChat(MainActivity.chatsAdapter.getItem(chatPos));
+                                                adapter.notifyDataSetChanged();
+                                                Intent intent=new Intent(ContactsActivity.this,ChatActivity.class);
+                                                intent.putExtra("ChatNumber", chatPos);
+                                                startActivity(intent);
+                                                isExist=true;
+                                            }
+                                        }
+                                        if(!isExist) {
+                                            Chat temp = new Chat();
+                                            temp.setAdresatId(adapter.getItem(position).getId());
+                                            String str;
+                                            if (adapter.getItem(position).getName() == null) {
+                                                str = "UNKNOWN";
+                                            } else {
+                                                str = adapter.getItem(position).getName();
+                                            }
+                                            temp.setAdresatName(str);
+                                            adapter.getItem(position).setChat(temp);
+                                            adapter.notifyDataSetChanged();
+                                            MainActivity.chatsAdapter.add(temp);
+                                            MainActivity.chatsAdapter.notifyDataSetChanged();
+                                            Intent intent = new Intent(ContactsActivity.this, ChatActivity.class);
+
+                                            startActivity(intent);
+                                        }
+                                        return true;
+                                    case R.id.deleteContact:
+                                        if(adapter.getItem(position).getChat()!=null)
+                                        adapter.getItem(position).getChat().setAdresatName(null);
+                                        adapter.remove(adapter.getItem(position));
+                                        adapter.notifyDataSetChanged();
+                                        MainActivity.chatsAdapter.notifyDataSetChanged();
+                                        return true;
+                                    default:
+                                        return false;
+                                }
+
+                            }
+
+
+                        });
+
+                popupMenu.show();
+                return false;
+            }
+        });
+
         final Contact Max= new Contact(989054056,"Max");
 
 
@@ -117,7 +195,7 @@ public class ContactsActivity extends Activity {
                                     public void onClick(DialogInterface dialogInterface, int id) {
                                         if ((!nameText.getText().toString().isEmpty()) && (!idText.getText().toString().isEmpty())&&(idText.getText().toString().length()<9)) {
                                             Contact contact = new Contact(Integer.valueOf(idText.getText().toString()), nameText.getText().toString());
-                                            contactAr.add(contact);
+                                            adapter.add(contact);
                                             adapter.notifyDataSetChanged();
                                             for (int i = 0; i < MainActivity.chatsAdapter.getCount(); i++) {
                                                 Chat temp = chatsAdapter.getItem(i);
@@ -153,6 +231,37 @@ public class ContactsActivity extends Activity {
             }
         });
     }
+
+    private void showPopupMenu(View v) {
+        PopupMenu popupMenu = new PopupMenu(this, v);
+        popupMenu.inflate(R.menu.contact_popmenu);
+
+        popupMenu
+                .setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId())
+                        {
+                            case R.id.openChat:
+                                Toast.makeText(getApplicationContext(),
+                                        "Вы выбрали PopupMenu 1",
+                                        Toast.LENGTH_SHORT).show();
+                                return true;
+                            case R.id.deleteContact:
+                                Toast.makeText(getApplicationContext(),
+                                        "Вы выбрали PopupMenu 2",
+                                        Toast.LENGTH_SHORT).show();
+                                return true;
+                            default:
+                                return false;
+                        }
+
+                    }
+
+
+                });
+        popupMenu.show();
+    }
     public void saveContacts()
     {
         Set<String> set=new HashSet<String>();
@@ -169,7 +278,7 @@ public class ContactsActivity extends Activity {
 
     @Override
     protected void onRestart() {
-        loadContacts();
+        //loadContacts();
         adapter.notifyDataSetChanged();
         super.onRestart();
     }
